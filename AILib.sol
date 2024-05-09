@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.4.16 <=0.8.23;
+pragma solidity >=0.4.16 <0.9.0;
 
 library AILib {
     function inference(bytes32 model_address, bytes memory input_data, uint256 output_size) internal view returns (bytes memory) {
-        bytes memory input = mergeBytes(model_address, input_data);
+        bytes memory input = mergeInput(model_address, input_data, output_size);
         uint256 len = input.length;
         bytes memory output = new bytes(output_size);
         uint256 retLen = 32 + output_size;
@@ -19,19 +19,26 @@ library AILib {
         return output;
     }
 
-    function mergeBytes(bytes32 param1, bytes memory param2) internal pure returns (bytes memory) {
-        bytes memory merged = new bytes(param1.length + param2.length);
+    function mergeInput(bytes32 model_address, bytes memory input_data, uint256 output_size) internal pure returns (bytes memory) {
+        bytes32 output_size_bytes = bytes32(output_size);
+        bytes memory merged = new bytes(model_address.length + output_size_bytes.length + input_data.length );
 
         uint k = 0;
-        for (uint i = 0; i < param1.length; i++) {
-            merged[k] = param1[i];
-            k++;
+        for (uint i = 0; i < model_address.length; i++) {
+            merged[k] = model_address[i];
+            ++k;
         }
 
-        for (uint i = 0; i < param2.length; i++) {
-            merged[k] = param2[i];
-            k++;
+        for (uint i = 0; i < output_size_bytes.length; i++) {
+            merged[k] = output_size_bytes[i];
+            ++k;
         }
+
+        for (uint i = 0; i < input_data.length; i++) {
+            merged[k] = input_data[i];
+            ++k;
+        }
+
         return merged;
     }
 }
