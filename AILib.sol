@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.4.16 <0.9.0;
+pragma solidity >=0.4.16 <=0.8.23;
 
 library AILib {
     function inference(bytes32 model_address, bytes memory input_data, uint256 output_size) internal view returns (bytes memory) {
